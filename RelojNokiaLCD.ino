@@ -129,6 +129,11 @@ void loop() {
    setTime(ho,mi,se,di,me,an);
    printDatos();
    dosPuntos();
+
+   int alarmCheck = alDias[1] + alDias[2] + alDias[3] + alDias[4] + alDias[5] + alDias[6] + alDias[7];
+   if (alarmCheck == 0) {
+   alarm = 0;
+   }
    if (alarm == 1) {
     lcd.setCursor(70,2);
     lcd.write(5);
@@ -144,7 +149,7 @@ void loop() {
     alarm = !alarm;
     }   
   hoy = weekday(now());      
-  if ( hoAL == tm.Hour && miAL == tm.Minute && seAL == tm.Second && alDias[hoy] == 1) {
+  if ( hoAL == tm.Hour && miAL == tm.Minute && seAL == tm.Second && alDias[hoy] == 1 && alarm == 1) {
     sonarAlarma();
   }
   
@@ -334,13 +339,9 @@ void printSetDatos() {
   lcd.write(2);
   lcd.setCursor(16,3);
   print2digits(di);
-  lcd.setCursor(28, 3);
   lcd.print("/");
-  lcd.setCursor(33, 3);
   print2digits(me);
-  lcd.setCursor(44, 3);
   lcd.print("/");
-  lcd.setCursor(50, 3);
   lcd.print(an);
   }
 
@@ -427,19 +428,17 @@ void printDatos() {
   
   // fecha
   //Dia de la semana
-  lcd.setCursor(16,3);
+  int ca = dias[dia].length();
+  int cu = (74/ca)*2;
+  lcd.setCursor(cu,3);
   lcd.print(dias[dia]);
   lcd.setCursor(8, 4);
   lcd.write(2);
   lcd.setCursor(16,4);
   print2digits(tm.Day);
-  lcd.setCursor(28, 4);
   lcd.print("/");
-  lcd.setCursor(33, 4);
   print2digits(tm.Month);
-  lcd.setCursor(44, 4);
   lcd.print("/");
-  lcd.setCursor(50, 4);
   print2digits(tmYearToCalendar(tm.Year));
   }
 
@@ -452,7 +451,9 @@ void setHoras() {
             ho++;
             if (ho > 23) {
               ho = 0;
-              }    
+              }
+            lcd.setCursor(20,2);
+            print2digits(ho);    
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -483,7 +484,9 @@ void setAlHoras() {
             hoAL++;
             if (hoAL > 23) {
               hoAL = 0;
-              }    
+              }
+            lcd.setCursor(20,2);
+            print2digits(hoAL);    
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -514,7 +517,9 @@ void setMinutos() {
             mi++;
             if (mi > 59) {
               mi = 0;
-              }    
+              }
+            lcd.setCursor(38, 2);
+            print2digits(mi);    
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -545,7 +550,9 @@ void setAlMinutos() {
             miAL++;
             if (miAL > 59) {
               miAL = 0;
-              }    
+              }
+            lcd.setCursor(38, 2);
+            print2digits(miAL);    
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -576,7 +583,9 @@ void setSegundos() {
             se++;
             if (se > 59) {
               se = 0;
-              }    
+              }
+            lcd.setCursor(57,2);
+            print2digits(se);    
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -606,7 +615,9 @@ void setAlSegundos() {
             seAL++;
             if (seAL > 59) {
               seAL = 0;
-              }    
+              }
+            lcd.setCursor(57,2);
+            print2digits(seAL);    
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -637,7 +648,9 @@ void setDias() {
             di++;
             if (di > 31) {
               di = 0;
-              }    
+              }
+            lcd.setCursor(16,3);
+            print2digits(di);    
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -667,7 +680,9 @@ void setMes() {
             me++;
             if (me > 12) {
               me = 0;
-              }    
+              }
+            lcd.setCursor(33, 3);
+            print2digits(me);    
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -697,7 +712,9 @@ void setAno() {
             an++;
             if (an > 2099) {
               an = 2015;
-              }    
+              }
+            lcd.setCursor(50, 3);
+            lcd.print(an);
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -736,6 +753,8 @@ void setL() {
                 } else {
                   alDias[2] = 0;
                   }
+                  lcd.setCursor(9, 4);
+                  lcd.write(boton);
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -773,6 +792,8 @@ void setM() {
                 } else {
                   alDias[3] = 0;
                   }
+                  lcd.setCursor(19, 4);
+                  lcd.write(boton);
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -810,6 +831,8 @@ void setMI() {
                 } else {
                   alDias[4] = 0;
                   }
+                  lcd.setCursor(29, 4);
+                  lcd.write(boton);
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -847,6 +870,8 @@ void setJ() {
                 } else {
                   alDias[5] = 0;
                   }
+                  lcd.setCursor(39, 4);
+                  lcd.write(boton);
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -884,6 +909,8 @@ void setV() {
                 } else {
                   alDias[6] = 0;
                   }
+                  lcd.setCursor(49, 4);
+                  lcd.write(boton);
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -921,6 +948,8 @@ void setS() {
                 } else {
                   alDias[7] = 0;
                   }
+                  lcd.setCursor(59, 4);
+                  lcd.write(boton);
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
@@ -958,6 +987,8 @@ void setD() {
                 } else {
                   alDias[1] = 0;
                   }
+                  lcd.setCursor(69, 4);
+                  lcd.write(boton);
             }
   
         if ((unsigned long)(sonMillis - preMillis) >= intervalo) {

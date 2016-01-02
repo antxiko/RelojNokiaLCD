@@ -51,6 +51,8 @@ int noteDurations[] = {
 
 String dias[] = { "", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado" };
 int alDias[] = {0,0,0,0,0,0,0,0};
+int diasMes[] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+bool bisiesto = false;
 
 int intervalo = 500;
 int puntos = 0;
@@ -126,6 +128,12 @@ void loop() {
    di = tm.Day;
    me = tm.Month;
    an = (tmYearToCalendar(tm.Year));
+   anoBisiesto(an);
+   if ( bisiesto == true) {
+    diasMes[2] = 29;
+    } else {
+      diasMes[2] = 28; 
+    } 
    setTime(ho,mi,se,di,me,an);
    printDatos();
    dosPuntos();
@@ -646,8 +654,8 @@ void setDias() {
         delay(150);
             if (estadoBoton2 == LOW) {
             di++;
-            if (di > 31) {
-              di = 0;
+            if (di > diasMes[me]) {
+              di = 1;
               }
             lcd.setCursor(16,3);
             print2digits(di);    
@@ -679,7 +687,7 @@ void setMes() {
             if (estadoBoton2 == LOW) {
             me++;
             if (me > 12) {
-              me = 0;
+              me = 1;
               }
             lcd.setCursor(33, 3);
             print2digits(me);    
@@ -711,7 +719,7 @@ void setAno() {
             if (estadoBoton2 == LOW) {
             an++;
             if (an > 2099) {
-              an = 2015;
+              an = 2016;
               }
             lcd.setCursor(50, 3);
             lcd.print(an);
@@ -1054,5 +1062,18 @@ void print2digits(int number) {
     lcd.print(number);
 }
 
-
+void anoBisiesto (int number) { 
+    if (number/400){
+      bisiesto = true;
+    }
+    else if(number/100){
+      bisiesto = false;
+    }
+    else if(number/4){
+      bisiesto = true;
+    }
+    else{
+      bisiesto = false;
+    }
+  }
 

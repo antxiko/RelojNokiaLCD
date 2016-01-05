@@ -4,7 +4,6 @@
 #include <Wire.h>
 #include <Time.h>
 #include <DS1307RTC.h>
-#include "pitches.h"
 
 //Definimos el pin y el tipo de sensor de temperatura 
 #define DHTPIN 8
@@ -41,18 +40,11 @@ int s = 0;
 int d = 0;
 int boton = 6;
 
-int melody[] = {
-NOTE_G3 , NOTE_C3, NOTE_DS3, NOTE_F3, NOTE_G3 ,NOTE_C3, NOTE_DS3, NOTE_F3, NOTE_D3,
-NOTE_F3 , NOTE_B2, NOTE_D3, NOTE_DS3, NOTE_F3, NOTE_B2, NOTE_DS3, NOTE_D3,NOTE_C3 };
-
-int noteDurations[] = {
-3, 3, 1, 1, 2, 2, 1, 1, 9,
-3, 3, 1, 1, 2, 2, 1, 1, 9};
-
 String dias[] = { "", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado" };
 int alDias[] = {0,0,0,0,0,0,0,0};
 int diasMes[] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
 bool bisiesto = false;
+bool alarmaSonando = false;
 
 int intervalo = 500;
 int puntos = 0;
@@ -158,8 +150,16 @@ void loop() {
     }   
   hoy = weekday(now());      
   if ( hoAL == tm.Hour && miAL == tm.Minute && seAL == tm.Second && alDias[hoy] == 1 && alarm == 1) {
-    sonarAlarma();
+    alarmaSonando = true;
   }
+  if (alarmaSonando == true) {
+    sonarAlarma();
+      estadoBoton2 = digitalRead(boton2);
+      delay(150);
+        if (estadoBoton2 == LOW) {
+          alarmaSonando = false;
+          }
+    }
   
   //Leemos el estado de los botones
   estadoBoton1 = digitalRead(boton1);
@@ -286,18 +286,13 @@ void loop() {
 
 //Funcion para que suene la alarma
 void sonarAlarma() {
-    // iterate over the notes of the melody:
-    for (int thisNote = 0; thisNote < 18; thisNote++) {
-
-    // to calculate the note duration, take one second
-    // divided by the note type.
-    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int noteDuration = 300 * noteDurations[thisNote];
-    tone(2, melody[thisNote],noteDuration);
-    //pause for the note’s duration plus 30 ms:
-    delay(noteDuration +30);
+  
+  sonMillis = millis();
+  if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
+    tone(2, 600, 500);
     }
-  }
+    preMillis = sonMillis;  
+}
 
 //Funcion para imprimir los bordes de la pantalla
 void printBordes() {

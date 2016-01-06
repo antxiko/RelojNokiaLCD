@@ -4,15 +4,16 @@
 #include <Wire.h>
 #include <Time.h>
 #include <DS1307RTC.h>
+#include "pitches.h"
 
 //Definimos el pin y el tipo de sensor de temperatura 
 #define DHTPIN 8
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
-
 const int boton1 = 9;
 const int boton2 = 10;
 const int boton3 = 11;
+
 
 int estadoBoton1= 0;
 int estadoBoton2= 0;
@@ -289,7 +290,15 @@ void sonarAlarma() {
   
   sonMillis = millis();
   if ((unsigned long)(sonMillis - preMillis) >= intervalo) {
-    tone(2, 600, 500);
+    
+    tone(2, NOTE_A6, 150);
+    delay(150);
+    tone(2, NOTE_A7, 150);
+    delay(150);
+    tone(2, NOTE_A6, 150);
+    delay(150);
+    tone(2, NOTE_A7, 150);
+    delay(150);
     }
     preMillis = sonMillis;  
 }

@@ -1,15 +1,19 @@
-
 #include <PCD8544.h>
 #include <DHT.h>
 #include <Wire.h>
 #include <Time.h>
 #include <DS1307RTC.h>
+#include <Rtc_Pcf8563.h>
 #include "pitches.h"
 
 //Definimos el pin y el tipo de sensor de temperatura 
 #define DHTPIN 8
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
+
+//init the real time clock
+Rtc_Pcf8563 rtc;
+
 const int boton1 = 9;
 const int boton2 = 10;
 const int boton3 = 11;
@@ -91,6 +95,10 @@ void setup() {
   // Inicializamos el sensor de temperatura y humedad DHT11
   dht.begin();
 
+  //RTC clear out all the registers
+  //rtc.initClock();
+  
+
   // creamos el caracter 0 con el reloj.
   lcd.createChar(0, reloj);
   // creamos el caracter 1 con el termometro
@@ -113,14 +121,14 @@ void setup() {
 
 void loop() {
 
-   tmElements_t tm;
-   RTC.read(tm);
-   ho = tm.Hour;
-   mi = tm.Minute;
-   se = tm.Second;
-   di = tm.Day;
-   me = tm.Month;
-   an = (tmYearToCalendar(tm.Year));
+//   tmElements_t tm;
+//   RTC.read(tm);
+   ho = rtc.getHour();
+   mi = rtc.getMinute();
+   se = rtc.getSecond();
+   di = rtc.getDay();
+   me = rtc.getMonth();
+   an = rtc.getYear();
    anoBisiesto(an);
    if ( bisiesto == true) {
     diasMes[2] = 29;
@@ -150,7 +158,7 @@ void loop() {
     alarm = !alarm;
     }   
   hoy = weekday(now());      
-  if ( hoAL == tm.Hour && miAL == tm.Minute && seAL == tm.Second && alDias[hoy] == 1 && alarm == 1) {
+  if ( hoAL == rtc.getHour() && miAL == rtc.getMinute() && seAL == rtc.getSecond() && alDias[hoy] == 1 && alarm == 1) {
     alarmaSonando = true;
   }
   if (alarmaSonando == true) {
@@ -204,7 +212,8 @@ void loop() {
         if (estadoBoton3 == LOW) {
          confTime = 0;
          setTime(ho,mi,se,di,me,an);
-         RTC.set(now());
+         rtc.setTime(ho, mi, se);
+         rtc.setDate(di,dia,me,0,an);
          lcd.clear();
          lcd.setCursor(0,1);
          lcd.print("time SET");
@@ -408,15 +417,16 @@ void printDatos() {
   int h = dht.readHumidity();
 
   // elementos al Time
-  tmElements_t tm;
-  RTC.read(tm);
+//  tmElements_t tm;
+//  RTC.read(tm);
   dia = weekday(now());
   
   // temperatura
   lcd.setCursor(8, 1);
   lcd.write(1);
   lcd.setCursor(16, 1);
-  lcd.print(t);  lcd.setCursor(32, 1);
+  lcd.print(t);
+  lcd.setCursor(32, 1);
   lcd.print("C");
   lcd.write(3);
 
@@ -432,11 +442,11 @@ void printDatos() {
   lcd.setCursor(12, 2);
   lcd.write(0);
   lcd.setCursor(20,2);
-  print2digits(tm.Hour);
+  print2digits(ho);
   lcd.setCursor(38, 2);
-  print2digits(tm.Minute);
+  print2digits(mi);
   lcd.setCursor(57, 2);
-  print2digits(tm.Second);
+  print2digits(se);
   
   // fecha
   //Dia de la semana
@@ -447,11 +457,12 @@ void printDatos() {
   lcd.setCursor(8, 4);
   lcd.write(2);
   lcd.setCursor(16,4);
-  print2digits(tm.Day);
+  print2digits(di);
   lcd.print("/");
-  print2digits(tm.Month);
+  print2digits(me);
   lcd.print("/");
-  print2digits(tmYearToCalendar(tm.Year));
+  lcd.print("20");
+  lcd.print(an);
   }
 
 void setHoras() {
@@ -722,10 +733,11 @@ void setAno() {
         delay(150);
             if (estadoBoton2 == LOW) {
             an++;
-            if (an > 2099) {
-              an = 2016;
+            if (an > 99) {
+              an = 16;
               }
             lcd.setCursor(50, 3);
+            lcd.print("20");
             lcd.print(an);
             }
   
@@ -734,6 +746,7 @@ void setAno() {
           //encendemos Hora
           case 0:
           lcd.setCursor(50, 3);
+          lcd.print("20");
           lcd.print(an);
           puntos = 1;
           break;

@@ -2,7 +2,6 @@
 #include <DHT.h>
 #include <Wire.h>
 #include <Time.h>
-#include <DS1307RTC.h>
 #include <Rtc_Pcf8563.h>
 #include "pitches.h"
 
@@ -228,8 +227,6 @@ void loop() {
   estadoBoton3 = digitalRead(boton3);
     if (estadoBoton3 == LOW) {
       lcd.clear();
-      tmElements_t tm;
-      RTC.read(tm);
       printSetAlarm();
       printAlDatos();
       dosPuntos();
@@ -363,6 +360,7 @@ void printSetDatos() {
   lcd.print("/");
   print2digits(me);
   lcd.print("/");
+  lcd.print("20");
   lcd.print(an);
   }
 
@@ -416,9 +414,6 @@ void printDatos() {
   int t = dht.readTemperature();
   int h = dht.readHumidity();
 
-  // elementos al Time
-//  tmElements_t tm;
-//  RTC.read(tm);
   dia = weekday(now());
   
   // temperatura
